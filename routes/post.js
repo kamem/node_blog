@@ -12,6 +12,13 @@ exports.show = function(req,res) {
 	res.render('posts/show',{post: posts[req.params.id]});
 }
 
+exports.json = function(req,res) {
+	res.json({
+		title: posts[req.params.id].title,
+		body: posts[req.params.id].body
+	});
+}
+
 exports.new = function(req,res) {
 	res.render('posts/new');
 }

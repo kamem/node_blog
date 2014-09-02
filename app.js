@@ -42,6 +42,7 @@ app.use(logger('dev'));
 //routing
 app.get('/',post.index);
 app.get('/posts/:id([0-9]+)',post.show);
+app.get('/posts/:id([0-9]+).json',post.json);
 app.get('/posts/new',post.new);
 app.post('/posts/create',post.create);
 app.get('/posts/:id/edit',post.edit);
