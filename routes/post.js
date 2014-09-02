@@ -1,8 +1,20 @@
-var posts = [
-	{title: 'title0',body: 'body0'},
-	{title: 'title1',body: 'body1'},
-	{title: 'title2',body: 'body2'},
-];
+var mongo = require('mongoose'),
+	db = require('../models/db');
+
+var entries = mongo.Schema({
+    "title": String,
+    "body": String
+})
+var Entries = mongo.model('entries',entries);
+
+
+var posts = [];
+Entries.find({}, function(err, collections) {
+	if(err) throw err;
+	for (var i = 0; i < collections.length; i++) {
+		posts.push(collections[i]);
+	};
+});
 
 exports.index = function(req,res) {
 	res.render('posts/index',{posts: posts});

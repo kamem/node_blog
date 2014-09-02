@@ -9,8 +9,9 @@ var express = require('express'),
 	session = require('express-session'),
 	RedisStore = require('connect-redis')(session),
 
-	csrf = require('csurf');
+	csrf = require('csurf'),
 
+	db = require('./models/db');
 
 
 //middleware
