@@ -3,32 +3,34 @@ var mongo = require('mongoose'),
 
 var entries = mongo.Schema({
     "title": String,
-    "body": String
+    "body": String,
+    "entryId": Number
 })
+
 var Entries = mongo.model('entries',entries);
 
-
 var posts = [];
-Entries.find({}, function(err, collections) {
-	if(err) throw err;
-	for (var i = 0; i < collections.length; i++) {
-		posts.push(collections[i]);
-	};
-});
 
 exports.index = function(req,res) {
-	res.render('posts/index',{posts: posts});
+	Entries.find({},function(err,posts) {
+		res.render('posts/index',{posts: posts});
+	});
 }
 
 exports.show = function(req,res) {
-	res.render('posts/show',{post: posts[req.params.id]});
+	Entries.findOne({entryId: req.params.id},function(err,post) {
+		res.render('posts/show',{post: post});
+	})
 }
 
 exports.json = function(req,res) {
-	res.json({
-		title: posts[req.params.id].title,
-		body: posts[req.params.id].body
-	});
+	Entries.findOne({entryId: req.params.id},function(err,post) {
+		res.json({
+			title: post.title,
+			body: post.body,
+			entryId: post.entryId
+		});
+	})
 }
 
 exports.new = function(req,res) {
@@ -36,17 +38,24 @@ exports.new = function(req,res) {
 }
 
 exports.edit = function(req,res) {
-	res.render('posts/edit',{post: posts[req.params.id],id: req.params.id});
+	Entries.findOne({entryId: req.params.id},function(err,post) {
+		res.render('posts/edit',{post: post});
+	})
 }
 
 exports.update = function(req,res,next) {
 	if(req.body.id !== req.params.id) {
 		next(new Error('ID not valid'));
 	} else {
-		posts[req.body.id] = {
-			title: req.body.title,
-			body: req.body.body
-		};
+		Entries.findOne({entryId: req.body.id},function(err,post) {
+			post.title = req.body.title;
+			post.body = req.body.body;
+			post.entryId = req.body.id;
+
+			post.save(function(err) {
+			  if (err) { console.log(err); }
+			});
+		})
 		res.redirect('/');
 	}
 }
@@ -55,16 +64,24 @@ exports.destroy = function(req,res,next) {
 	if(req.body.id !== req.params.id) {
 		next(new Error('ID not valid'));
 	} else {
-		posts.splice(req.body.id,1);
+		Entries.remove({entryId: parseInt(req.body.id)}, function(err) {
+			console.log(err);
+		});
 		res.redirect('/');
 	}
 }
 
 exports.create = function(req,res) {
-	var post = {
-		title: req.body.title,
-		body: req.body.body
-	};
-	posts.push(post);
+	Entries.find({}).sort('-entryId').limit(1).exec(function(err, post) {
+		var entryId = post.length === 0 ? 0 : post[0].entryId + 1;
+		var entry = new Entries({
+			title: req.body.title,
+			body: req.body.body,
+			entryId: entryId
+		});
+		entry.save(function(err) {
+		  if (err) { console.log(err); }
+		});
+	});
 	res.redirect('/');
 }

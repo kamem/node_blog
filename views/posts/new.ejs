@@ -3,10 +3,12 @@
 <h1>Add new</h1>
 
 <form method="post" action="/posts/create">
-	<input type="text" name="title">
-	<input type="text" name="body">
+	<p>title: <input type="text" name="title"></p>
+	<p>body: <input type="text" name="body"></p>
+
 	<input type="hidden" name="_csrf" value="<%= csrftoken %>">
 	<input type="submit" value="add!">
 </form>
+<p><a href="/">Go Back</a></p>
 
 <% include ../footer %>

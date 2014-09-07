@@ -54,6 +54,7 @@ app.use(function(err,req,res,next) {
 	res.send(err.message);
 });
 
+// module.exports = app;
 
 app.listen(3000);
 console.log('server starting...');
