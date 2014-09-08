@@ -1,13 +1,14 @@
-var mongo = require('mongoose'),
+var settings = require('../settings'),
+	mongo = require('mongoose'),
 	db = require('../models/db');
 
 var entries = mongo.Schema({
     "title": String,
     "body": String,
     "entryId": Number
-})
+});
 
-var Entries = mongo.model('entries',entries);
+var Entries = mongo.model(settings.dbCollectionName,entries);
 
 var posts = [];
 
@@ -15,13 +16,13 @@ exports.index = function(req,res) {
 	Entries.find({},function(err,posts) {
 		res.render('posts/index',{posts: posts});
 	});
-}
+};
 
 exports.show = function(req,res) {
 	Entries.findOne({entryId: req.params.id},function(err,post) {
 		res.render('posts/show',{post: post});
-	})
-}
+	});
+};
 
 exports.json = function(req,res) {
 	Entries.findOne({entryId: req.params.id},function(err,post) {
@@ -30,18 +31,18 @@ exports.json = function(req,res) {
 			body: post.body,
 			entryId: post.entryId
 		});
-	})
-}
+	});
+};
 
 exports.new = function(req,res) {
 	res.render('posts/new');
-}
+};
 
 exports.edit = function(req,res) {
 	Entries.findOne({entryId: req.params.id},function(err,post) {
 		res.render('posts/edit',{post: post});
-	})
-}
+	});
+};
 
 exports.update = function(req,res,next) {
 	if(req.body.id !== req.params.id) {
@@ -55,10 +56,10 @@ exports.update = function(req,res,next) {
 			post.save(function(err) {
 			  if (err) { console.log(err); }
 			});
-		})
+		});
 		res.redirect('/');
 	}
-}
+};
 
 exports.destroy = function(req,res,next) {
 	if(req.body.id !== req.params.id) {
@@ -69,7 +70,7 @@ exports.destroy = function(req,res,next) {
 		});
 		res.redirect('/');
 	}
-}
+};
 
 exports.create = function(req,res) {
 	Entries.find({}).sort('-entryId').limit(1).exec(function(err, post) {

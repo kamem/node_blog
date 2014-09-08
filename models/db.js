@@ -1,5 +1,6 @@
-var mongo = require('mongoose');
-mongo.connect('mongodb://localhost/blog');
+var settings = require('../settings'),
+	mongo = require('mongoose');
+mongo.connect('mongodb://localhost/' + settings.dbName);
 
 var db = mongo.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
